@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BlendArt – Dark & Clean</title>
+  <meta name="description" content="Dunkles, klares Portfolio für Blender-Projekte: Masonry Grid, dezente Animationen, Multi-Image/Video Lightbox, Filter & Suche."/>
+  <style>
+    /*
+    =====================================================================
+    BLENDART – DARK & CLEAN EDITION + VIDEO SUPPORT
+    Änderungen:
+      • Vollwertiges Dark Theme (hoher Kontrast, trotzdem soft)
+      • Weniger Ablenkung: schwächere Schatten, weniger Parallax/Bewegung
+      • Dezentere Hover- und Reveal-Animationen
+      • Overlay/Text für Dark Mode optimiert
+      • Magnetic-Hover entfernt → ruhiger Look
+      • Video-Support für MP4, WebM und YouTube-Links
+    =====================================================================
+    */
+/* Login-Button */
+.login-btn {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.7rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  transition: all 0.3s ease;
+  z-index: 2000;
+}
+
+.login-btn:hover {
+  background: rgba(59,130,246,0.8);
+  border-color: rgba(255,255,255,0.3);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(59,130,246,0.7);
+}
+
+    :root {
+      --bg: #0b0d12;           /* Tiefes Nachtblau/Anthrazit */
+      --bg-soft: #0f131a;      /* Sekundärfläche */
+      --card: rgba(255,255,255,0.03);
+      --card-strong: rgba(255,255,255,0.06);
+      --ink: #e5e7eb;          /* Primärtext */
+      --muted: #9aa4b2;        /* Sekundärtext */
+      --accent: #7aa2f7;       /* Akzent (blau) */
+      --ring: rgba(122,162,247,0.45);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --radius: 20px;
+      --trans: 220ms cubic-bezier(.22,1,.36,1);
+      --maxw: 1280px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      :root { --trans: 0ms linear; }
+      * { animation: none !important; transition: none !important; }
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial;
+      color: var(--ink);
+      background: radial-gradient(1200px 800px at 70% -240px, rgba(122,162,247,.08), transparent 60%), var(--bg);
+      overflow-x: hidden;
+    }
+
+    .container { width: min(92vw, var(--maxw)); margin: 0 auto; }
+    .visually-hidden { position: absolute !important; height:1px; width:1px; overflow:hidden; clip: rect(1px,1px,1px,1px); white-space: nowrap; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: transparent; border: 0; cursor: pointer; }
+
+    .btn {
+      padding: .8rem 1rem; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      box-shadow: none; backdrop-filter: blur(8px);
+      transition: transform var(--trans), background var(--trans), border-color var(--trans);
+    }
+    .btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18); }
+    .btn:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+
+    /* ============================================================
+       HERO – Dark minimal
+    ============================================================ */
+    .hero { position: relative; min-height: 84svh; display: grid; place-items: center; overflow: hidden; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); }
+    .hero-inner { text-align: center; padding: 6rem 1rem; }
+
+    .title { font-weight: 800; letter-spacing: .02em; line-height: .95; font-size: clamp(2.6rem, 6.2vw, 6rem); margin: 0 0 1rem; filter: drop-shadow(0 10px 30px rgba(0,0,0,.2)); }
+    .typing { display: inline-block; border-right: .12em solid var(--ink); padding-right: .1em; animation: caret 1s step-end infinite; }
+    @keyframes caret { 50% { border-color: transparent; } }
+
+    .subtitle { font-size: clamp(1.05rem, 1.8vw, 1.25rem); color: var(--muted); max-width: 58ch; margin: 0 auto 2rem; line-height: 1.6; }
+    .hero-cta { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
+
+    /* Floaters – stark reduziert */
+    .floaters { position: absolute; inset: 0; pointer-events: none; opacity: .35; }
+    .blob { position: absolute; width: clamp(160px, 22vw, 320px); aspect-ratio: 1/1; border-radius: 42% 58% 64% 36% / 40% 46% 54% 60%; background: radial-gradient(circle at 30% 30%, rgba(122,162,247,.18), rgba(122,162,247,.06) 35%, transparent 60%); filter: blur(18px) saturate(1.1); animation: bob 18s ease-in-out infinite; }
+    .blob:nth-child(1) { top: 10%; left: 8%; }
+    .blob:nth-child(2) { bottom: 12%; right: 10%; animation-duration: 22s; }
+    .blob:nth-child(3) { top: 22%; right: 35%; animation-duration: 26s; }
+    @keyframes bob { 0%,100% { transform: translateY(-3px);} 50% { transform: translateY(3px);} }
+
+    /* Dezente Parallax-Punkte */
+    .parallax { position: absolute; inset: -10% -10% -10% -10%; background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 28px 28px; mask-image: radial-gradient(closest-side, black 60%, transparent 100%); transform: translateZ(0); }
+
+    /* ============================================================
+       CONTROLS (Filter + Suche)
+    ============================================================ */
+    .toolbar { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px); background: rgba(11,13,18,.7); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .toolbar-inner { display:flex; align-items:center; gap:.8rem; padding: .9rem 0; }
+    .control { display:flex; align-items:center; gap:.6rem; padding:.6rem .9rem; border-radius: 999px; background: var(--card); border: 1px solid rgba(255,255,255,.08); }
+    .control input, .control select { border:0; background: transparent; outline: none; font: inherit; min-width: 140px; color: var(--ink); }
+    .control:focus-within { box-shadow: 0 0 0 3px var(--ring); }
+
+    /* ============================================================
+       MASONRY GRID
+    ============================================================ */
+
+/* ============================================================
+   MASONRY GRID
+============================================================ */
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.1rem; 
+  padding: 2rem 0 5rem;
+  align-items: start; /* WICHTIG: Das fehlt */
+}
+
+.item { 
+  margin: 0; 
+  position: relative; 
+}
+
+.card {
+  position: relative; 
+  overflow: hidden; 
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.08); 
+  box-shadow: none; 
+  transform: translateZ(0);
+}
+
+.media { 
+  position: relative; 
+  overflow: hidden; 
+  aspect-ratio: 4/3; 
+  background: #000; 
+}
+
+.media img, .media video { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  display: block; 
+  transition: transform var(--trans), filter var(--trans); 
+  will-change: transform; 
+}
+
+.card:hover .media img, .card:hover .media video { 
+  transform: scale(1.02); 
+  filter: saturate(1.03) contrast(1.02); 
+}
+
+
+    .card {
+      position: relative; overflow: hidden; border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08); box-shadow: none; transform: translateZ(0);
+    }
+
+    .media { position: relative; overflow: hidden; aspect-ratio: 4/3; background: #000; }
+    .media img, .media video { width: 100%; height: 100%; object-fit: cover; display:block; transition: transform var(--trans), filter var(--trans); will-change: transform; }
+    .card:hover .media img, .card:hover .media video { transform: scale(1.02); filter: saturate(1.03) contrast(1.02); }
+
+    .media-count { position: absolute; top: .75rem; right: .75rem; background: rgba(0,0,0,.6); color: #fff; padding: .3rem .7rem; border-radius: 999px; font-size: .75rem; font-weight: 500; backdrop-filter: blur(8px); z-index: 3; border: 1px solid rgba(255,255,255,0.14); }
+
+    .play-indicator::after {
+      content: '▶'; color: white; font-size: 1.2rem; margin-left: 3px;
+    }
+    .card:hover .play-indicator { transform: translate(-50%, -50%) scale(1.1); background: rgba(0,0,0,.); }
+
+    .overlay { position: absolute; inset: auto 0 0 0; padding: 1rem 1rem 1.1rem; color: #e7eaee; background: linear-gradient(180deg, transparent, rgba(0,0,0,.72) 45%); transform: translateY(100%); transition: transform var(--trans); }
+    .card:hover .overlay { transform: translateY(0%); }
+    .overlay h3 { margin: 0 0 .25rem; font-size: 1.05rem; letter-spacing: .3px; }
+    .overlay p { margin: 0; color: var(--muted); font-size: .95rem; }
+
+    .meta { position:absolute; top:.75rem; left:.75rem; display:flex; gap:.4rem; z-index:2; }
+    .tag { padding:.36rem .6rem; font-size:.8rem; border-radius:999px; background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); color: #cbd5e1; }
+
+    /* Skeleton (dark) */
+    .skeleton { background: linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.02), rgba(255,255,255,.06)); background-size: 300% 100%; animation: shimmer 1.2s infinite linear; }
+    @keyframes shimmer { 0% { background-position: 0% 0; } 100% { background-position: -200% 0; } }
+
+    /* Reveal (dezent) */
+    .reveal { opacity: 0; transform: translateY(10px) scale(.995); }
+    .reveal.in { opacity: 1; transform: translateY(0) scale(1); transition: opacity 380ms ease, transform 420ms cubic-bezier(.22,1,.36,1); }
+
+    /* ============================================================
+       LIGHTBOX – Multi-Media (Image + Video)
+    ============================================================ */
+    .lightbox { position: fixed; inset:0; display:none; place-items:center; background: rgba(10,12,16, .85); backdrop-filter: blur(8px); z-index: 100; animation: fadeIn .24s ease both; }
+    .lightbox.open { display:grid; }
+    @keyframes fadeIn { from{ opacity:0;} to{opacity:1;} }
+
+    .lb-inner { width: min(95vw, 1200px); max-height: 90vh; border-radius: 18px; overflow:hidden; background: #0e1116; box-shadow: 0 20px 60px rgba(0,0,0,.5); display: grid; grid-template-rows: auto 1fr auto auto; }
+    .lb-header { color: #e5e7eb; padding: 1rem 1.2rem; display:flex; align-items:center; justify-content:space-between; gap:.8rem; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .lb-title { font-size: 1.25rem; font-weight: 600; }
+    .lb-media { position: relative; background:#000; display: flex; align-items: center; justify-content: center; min-height: 400px; overflow: hidden; }
+    .lb-media img, .lb-media video { max-width: 100%; max-height: 60vh; object-fit: contain; display:block; transition: opacity 0.25s ease, transform 0.25s ease; }
+
+
+    /* YouTube iframe styling */
+    .lb-media iframe { 
+      width: 100%; height: 80vh; min-height: 400px; border: 0;
+      border-radius: 8px;
+    }
+
+    .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,.65); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.2s ease; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.12); }
+    .lb-nav:hover { background: rgba(0,0,0,.85); transform: translateY(-50%) scale(1.05); }
+    .lb-nav:disabled { opacity: 0.35; cursor: not-allowed; }
+    .lb-nav.lb-prev { left: 16px; }
+    .lb-nav.lb-next { right: 16px; }
+
+    .lb-counter { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.6); color: white; padding: .45rem .9rem; border-radius: 18px; font-size: .9rem; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.12); }
+
+    .lb-thumbnails { display: flex; gap: .8rem; padding: 1rem 1.2rem; overflow-x: auto; background: rgba(255,255,255,.03); justify-content: center; max-height: 100px; }
+    .lb-thumbnail { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s ease; flex-shrink: 0; opacity: 0.7; position: relative; }
+    .lb-thumbnail:hover { opacity: 0.9; transform: scale(1.03); }
+    .lb-thumbnail.active { border-color: var(--accent); opacity: 1; }
+
+    /* Video thumbnail indicator */
+    .lb-thumbnail.video::after {
+      content: '▶'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      color: white; font-size: 0.8rem; text-shadow: 0 0 4px rgba(0,0,0,0.8);
+    }
+
+    .lb-info { color: #e5e7eb; padding: 1rem 1.2rem; display:flex; align-items:center; justify-content:space-between; gap:.8rem; border-top: 1px solid rgba(255,255,255,.08); }
+    .lb-desc { opacity:.85; font-size:.95rem; }
+    .lb-actions { display:flex; gap:.5rem; }
+    .chip { padding:.45rem .7rem; border:1px solid rgba(255,255,255,.14); border-radius:999px; color:#cbd5e1; font-size: .85rem; }
+
+    .close { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); border-radius: 8px; width: 36px; height: 36px; display:grid; place-items:center; color: #e5e7eb; transition: all 0.2s ease; }
+    .close:hover { background: rgba(255,255,255,.12); }
+    .close:focus-visible { outline: 3px solid var(--ring); }
+
+    .kb-hint { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.6); color: white; padding: .35rem .7rem; border-radius: 14px; font-size: .75rem; opacity: .7; backdrop-filter: blur(10px); pointer-events: none; }
+
+    footer { padding: 2.5rem 0 4rem; color: var(--muted); text-align:center; }
+    .brand { font-weight: 800; letter-spacing:.3px; }
+
+    @media (max-width: 768px) {
+      .lb-inner { max-width: 98vw; max-height: 95vh; }
+      .lb-nav { width: 44px; height: 44px; font-size: 1.05rem; }
+      .lb-nav.lb-prev { left: 10px; }
+      .lb-nav.lb-next { right: 10px; }
+      .lb-thumbnails { padding: .8rem; gap: .5rem; }
+      .lb-thumbnail { width: 60px; height: 45px; }
+      .lb-header, .lb-info { padding: .8rem 1rem; }
+      .lb-media iframe { height: 50vh; min-height: 300px; }
+    }
+    /* ================================
+   Slide-Out Menü (rechts)
+================================ */
+.side-menu {
+  position: fixed;
+  top: 0;
+  right: -320px; /* versteckt außerhalb */
+  width: 280px;
+  height: 100%;
+  background: rgba(20, 24, 32, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: -4px 0 16px rgba(0,0,0,0.4);
+  padding: 2rem 1.5rem;
+  transition: right 0.4s ease;
+  z-index: 200;
+}
+.side-menu.open { right: 0; }
+
+.side-menu .close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.side-menu .close-btn:hover { background: rgba(255,255,255,0.15); }
+
+.side-menu ul { list-style: none; padding: 3rem 0 0; margin: 0; }
+.side-menu li { margin: 1rem 0; }
+.side-menu a {
+  font-size: 1.1rem;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.side-menu a:hover { color: var(--accent); }
+
+/* Toggle-Button */
+.menu-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  color: var(--ink);
+  font-size: 1.3rem;
+  cursor: pointer;
+  z-index: 210;
+  transition: background 0.3s;
+}
+.menu-toggle:hover { background: rgba(255,255,255,0.12); }
+
+  </style>
+</head>
+<body>
+  <a href="login.html" class="login-btn">🔑 Login</a>
+
+  <header class="hero" aria-label="Spektakulärer Einstieg">
+    <div class="parallax" aria-hidden="true"></div>
+    <div class="floaters" aria-hidden="true">
+      <div class="blob" data-depth="0.06"></div>
+      <div class="blob" data-depth="0.10"></div>
+      <div class="blob" data-depth="0.08"></div>
+    </div>
+<!-- Slide-Out Menü -->
+<nav class="side-menu" id="sideMenu">
+  <button class="close-btn" id="closeMenu">✕</button>
+  <ul>
+    <li><a href="index.html">Startseite</a></li>
+     <li><a href="raspberry.html">Raspberry Pi</a></li>
+     <li><a href="Games.htm">Games</a></li>
+    <li><a href="impressum.html">Impressum</a></li>
+    <li><a href="datenschutz.html">Datenschutz</a></li>
+    <li><a href="#gallery">Portfolio</a></li>
+  </ul>
+</nav>
+
+<!-- Menü-Button oben rechts -->
+<button class="menu-toggle" id="openMenu">☰</button>
+
+    <div class="hero-inner container">
+      <h1 class="title" aria-live="polite">
+        <span class="typing" id="typing">DIGITAL ARTISTRY</span>
+      </h1>
+      <p class="subtitle">Cinematische 3D‑Renderings & Animationen – ultra‑clean, fokussiert und in einem ruhigen Dark Theme präsentiert.</p>
+      <div class="hero-cta">
+        <a href="#gallery" class="btn" aria-label="Zur Galerie scrollen">Galerie ansehen ↓</a>
+        <button class="btn" id="shuffle" aria-label="Zufälliges Projekt öffnen">Zufall</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="content" class="container" aria-label="Portfolio Inhalt">
+    <section class="toolbar" aria-label="Filter und Suche">
+      <div class="toolbar-inner container">
+        <div class="control" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m21 20.3l-3.6-3.6a8.4 8.4 0 1 0-1.3 1.3l3.6 3.6a.9.9 0 0 0 1.3-1.3M4.8 10.4a5.6 5.6 0 1 1 11.2 0a5.6 5.6 0 0 1-11.2 0"/></svg>
+          <input id="search" type="search" placeholder="Suche nach Projekten…" aria-label="Projektsuche" />
+        </div>
+        <div class="control">
+          <label for="filter" class="visually-hidden">Kategorie</label>
+          <select id="filter" aria-label="Kategorie filtern">
+            <option value="all">Alle Kategorien</option>
+          </select>
+        </div>
+        <div class="control">
+          <label for="sort" class="visually-hidden">Sortierung</label>
+          <select id="sort" aria-label="Sortierung">
+            <option value="date-desc">Neueste zuerst</option>
+            <option value="date-asc">Älteste zuerst</option>
+            <option value="title-asc">Titel A–Z</option>
+            <option value="title-desc">Titel Z–A</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" class="gallery" aria-live="polite" aria-busy="false"></section>
+  </main>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" aria-modal="true" role="dialog" aria-label="Projektansicht">
+    <div class="lb-inner">
+      <div class="lb-header">
+        <div class="lb-title" id="lb-title"></div>
+        <button class="close" id="lb-close" aria-label="Schließen">✕</button>
+      </div>
+      <div class="lb-media" id="lb-media-container">
+        <!-- Content wird dynamisch hier eingefügt -->
+      </div>
+      <div class="lb-thumbnails" id="lb-thumbnails"></div>
+      <div class="lb-info">
+        <div class="lb-desc" id="lb-desc"></div>
+        <div class="lb-actions">
+          <span id="lb-cat" class="chip" aria-label="Kategorie"></span>
+          <span id="lb-date" class="chip" aria-label="Datum"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="container">
+    <p>© <span class="brand">BlendArt</span> • Blender Portfolio - Tom Westerfeld</p>
+      <p style="margin-top:8px; font-size:0.95rem; color:var(--muted);">
+    <a href="impressum.html">Impressum</a> • <a href="datenschutz.html">Datenschutzerklärung</a>
+  </p>
+  </footer>
+
+  <script>
+    /* ============================================================
+       DATA – Multi-Media Projects (Bilder & Videos)
+       → Füge deine eigenen Projekte in gleicher Struktur hinzu
+       
+       Media-Typen:
+       - type: "image" → Standard Bild
+       - type: "video" → MP4/WebM Video
+       - type: "youtube" → YouTube Video (videoId erforderlich)
+    ============================================================ */
+   const PROJECTS = [
+  { 
+    title: "BlendArt055", 
+    desc: "Prozedurale Motion.", 
+    cat: "Motion", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt055/BlendArt055_001.png", alt: "Hauptansicht der Aluminium-Strukturen" },
+      { type: "video", src: "assets/BlendArt055/0001-0060.mp4", alt: "Animation" },
+      { type: "video", src: "assets/BlendArt055/blau.mp4", alt: "Animation" },
+      { type: "video", src: "assets/BlendArt055/grün.mp4", alt: "Animation" },
+       ]
+      },
+    { 
+    title: "BlendArt057", 
+    desc: "Glas", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt057/BlendArt057_blau.png", alt: "Glas_blau" },
+      { type: "image", src: "assets/BlendArt057/BlendArt057_gelb.png", alt: "Glas_gelb" },
+      { type: "image", src: "assets/BlendArt057/BlendArt057_grün.png", alt: "Glas_grün" },
+      { type: "image", src: "assets/BlendArt057/BlendArt057_hellblau.png", alt: "Glas_hellblau" },
+      { type: "image", src: "assets/BlendArt057/BlendArt057_lila.png", alt: "Glas_lila" },
+      { type: "image", src: "assets/BlendArt057/BlendArt057_orange.png", alt: "Glas_orange" },
+      { type: "image", src: "assets/BlendArt057/BlendArt057_pink.png", alt: "Glas_pink" },
+      { type: "image", src: "assets/BlendArt057/BlendArt057_weiß.png", alt: "Glas_weiß" },
+       ]
+      },
+      { 
+    title: "BlendArt060", 
+    desc: "SimpleObjects", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt060/BlendArt060_blau.png", alt: "Glas_blau" },
+      { type: "image", src: "assets/BlendArt060/BlendArt060_grau.png", alt: "Glas_gelb" },
+      { type: "image", src: "assets/BlendArt060/BlendArt060_grün.png", alt: "Glas_grün" },
+      { type: "image", src: "assets/BlendArt060/BlendArt060_hellblau.png", alt: "Glas_hellblau" },
+      { type: "image", src: "assets/BlendArt060/BlendArt060_lila.png", alt: "Glas_lila" },
+      { type: "image", src: "assets/BlendArt060/BlendArt060_türkis.png", alt: "Glas_orange" },
+       ]
+      },
+      { 
+    title: "BlendArt062", 
+    desc: "The Art", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt062/BlendArt062_dunkelgrau.png", alt: "Glas_blau" },
+      { type: "image", src: "assets/BlendArt062/BlendArt062_gelb.png", alt: "Glas_gelb" },
+      { type: "image", src: "assets/BlendArt062/BlendArt062_hellblau.png", alt: "Glas_grün" },
+      { type: "image", src: "assets/BlendArt062/BlendArt062_türkis.png", alt: "Glas_hellblau" },
+      { type: "image", src: "assets/BlendArt062/BlendArt062_weiß.png", alt: "Glas_lila" },
+       ]
+       },
+       { 
+    title: "BlendArt063", 
+    desc: "The Beauty of Light", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt063/BlendArt063_blau.png", alt: "Glas_blau" },
+      { type: "image", src: "assets/BlendArt063/BlendArt063_gelb.png", alt: "Glas_gelb" },
+      { type: "image", src: "assets/BlendArt063/BlendArt063_grün.png", alt: "Glas_grün" },
+      { type: "image", src: "assets/BlendArt063/BlendArt063_lila.png", alt: "Glas_hellblau" },
+      { type: "image", src: "assets/BlendArt063/BlendArt063_pink.png", alt: "Glas_lila" },
+      { type: "image", src: "assets/BlendArt063/BlendArt063_türkis.png", alt: "Glas_lila" },
+       ]
+       },
+       { 
+    title: "BlendArt064", 
+    desc: "The Beauty of Light", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt064/BlendArt064_001.png", alt: "Glas_blau" },
+      { type: "image", src: "assets/BlendArt064/BlendArt064_002.png", alt: "Glas_gelb" },
+      { type: "image", src: "assets/BlendArt064/BlendArt064_003.png", alt: "Glas_grün" },
+      { type: "image", src: "assets/BlendArt064/BlendArt064_004.png", alt: "Glas_hellblau" },
+      { type: "image", src: "assets/BlendArt064/BlendArt064_005.png", alt: "Glas_lila" },
+       ]
+       },
+       { 
+    title: "BlendArt066", 
+    desc: "The Beauty of Spheres", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt066/BlendArt066_blau.png", alt: "Glas_blau" },
+      { type: "image", src: "assets/BlendArt066/BlendArt066_grau.png", alt: "Glas_gelb" },
+      { type: "image", src: "assets/BlendArt066/BlendArt066_grün.png", alt: "Glas_grün" },
+      { type: "image", src: "assets/BlendArt066/BlendArt066_helllila.png", alt: "Glas_hellblau" },
+      { type: "image", src: "assets/BlendArt066/BlendArt066_hellrot.png", alt: "Glas_lila" },
+      { type: "image", src: "assets/BlendArt066/BlendArt066_lila.png", alt: "Glas_lila" },
+      { type: "image", src: "assets/BlendArt066/BlendArt066_silber.png", alt: "Glas_lila" },
+       ]
+       },
+       { 
+    title: "BlendArt054", 
+    desc: "Pendel", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt054/BlendArt054_001.png", alt: "Pendel" },
+      { type: "video", src: "assets/BlendArt054/0121-0240.mp4", alt: "Animation" },
+       ]
+       },
+       { 
+    title: "BlendArt053", 
+    desc: "Pendel2", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt053/BlendArt053_001.png", alt: "Pen" },
+      { type: "video", src: "assets/BlendArt053/0001-0480.mp4", alt: "Animation" },
+       ]
+       },
+       { 
+    title: "BlendArt052", 
+    desc: "Wave", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt052/BlendArt052_001.png", alt: "Wave" },
+      { type: "image", src: "assets/BlendArt052/B0001.png", alt: "Wave1" },
+      { type: "video", src: "assets/BlendArt052/0001-0480.mp4", alt: "Animation" },
+      ]
+      },
+      { 
+    title: "BlendArt050", 
+    desc: "Background", 
+    cat: "Art", 
+    date: "2025-05-28",
+    media: [
+      { type: "image", src: "assets/BlendArt050/BlendAer050_001.png", alt: "Pendel2" },
+      { type: "video", src: "assets/BlendArt050/0001-0720.mp4", alt: "Animation" },
+      ]
+      },
+      { 
+    title: "BlendArt048", 
+    desc: "Light", 
+    cat: "Art", 
+    date: "2025-06-28",
+    media: [
+      { type: "video", src: "assets/BlendArt048/blau.mp4", alt: "Animation" },
+      { type: "video", src: "assets/BlendArt048/grün.mp4", alt: "Animation" },
+      { type: "video", src: "assets/BlendArt048/lila.mp4", alt: "Animation" },
+      { type: "video", src: "assets/BlendArt048/pink.mp4", alt: "Animation" },
+      { type: "video", src: "assets/BlendArt048/rot.mp4", alt: "Animation" },
+      { type: "video", src: "assets/BlendArt048/Türkis.mp4", alt: "Animation" },
+      ]
+      },
+      { 
+    title: "BlendArt047", 
+    desc: "Kreis", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt047/0001.png", alt: "Pendel2" },
+      { type: "video", src: "assets/BlendArt047/0001-0288.mp4", alt: "Animation" },
+      ]
+      },
+      { 
+    title: "BlendArt046", 
+    desc: "Factory", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt046/0001.png", alt: "Factory" },
+      { type: "video", src: "assets/BlendArt046/0001-0400.mp4", alt: "Animation" },
+      ]
+      },
+       { 
+    title: "BlendArt045", 
+    desc: "Factory", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt045/BlendArt045_001.png", alt: "Art" },
+      { type: "video", src: "assets/BlendArt045/0001-0300.mp4", alt: "Animation" },
+      ]
+      },
+      { 
+    title: "BlendArt043", 
+    desc: "Factory", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt043/0001-0400.mp4", alt: "Animation" },
+      { type: "video", src: "assets/BlendArt043/0001-1500.mp4", alt: "Animation" },
+      ]
+      },
+      { 
+    title: "BlendArt040", 
+    desc: "Factory", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt040/BlendArt040_001.png", alt: "Art" },
+      { type: "video", src: "assets/BlendArt040/0001-0480.mp4", alt: "Animation" },
+      ]
+      },
+       { 
+    title: "Factory", 
+    desc: "Factory", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/Factory/0001-0480.mp4", alt: "Animation" },
+      { type: "image", src: "assets/Factory/Factory_Animation_001.png", alt: "Art" },
+      { type: "video", src: "assets/Factory/0001-0360.mp4", alt: "Animation" },
+      ]
+      },
+      { 
+    title: "BlendArt039", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt039/0001-0720.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt039/BlendArt039_001.png", alt: "Art" },
+      { type: "image", src: "assets/BlendArt039/BlendArt039_002.png", alt: "Art" },
+      ]
+      },
+       { 
+    title: "BlendArt038", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt038/0001-0750.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt038/BlendArt038_003.png", alt: "Art" },
+      ]
+      },
+       { 
+    title: "BlendArt035", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt035/0001-0540.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt035/BlendArt035_001.png", alt: "Art" },
+      ]
+      },
+       { 
+    title: "BlendArt032", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt032/0001-1636.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt032/BlendArt032_001.png", alt: "Art" },
+      { type: "image", src: "assets/BlendArt032/BlendArt032_002.png", alt: "Art" },
+      { type: "image", src: "assets/BlendArt032/BlendArt032_003.1.png", alt: "Art" },
+      { type: "image", src: "assets/BlendArt032/BlendArt032_004.png", alt: "Art" },
+      { type: "image", src: "assets/BlendArt032/BlendArt032_005.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt031", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt031/0001-0500.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt031/BlendArt031_001.png", alt: "Art" },
+      { type: "image", src: "assets/BlendArt031/BlendArt031_002.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt030", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt030/0001-0480.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt030/BlendArt030_001.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt029", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt029/0001-0210.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt029/BlendArt029_001.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt028", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt028/0001-0300.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt028/BlendArt028_001.png", alt: "Art" },
+      { type: "image", src: "assets/BlendArt028/BlendArt028_003.png", alt: "Art" },
+      ]
+      },
+       { 
+    title: "BlendArt027", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt027/0001-0360.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt027/BlendArt027_001.png", alt: "Art" },
+      { type: "image", src: "assets/BlendArt027/BlendArt027_002.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt026", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt026/0001-0500.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt026/BlendArt026_001.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt025", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt025/0001-0180.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt025/BlendArt025_003.png", alt: "Art" },
+      { type: "image", src: "assets/BlendArt025/BlendArt025_004.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt024", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt024/0001-0500_Holz.mp4", alt: "Animation" },
+      { type: "video", src: "assets/BlendArt024/0001-0500_Weiß.mp4", alt: "Animation" },
+      ]
+      },
+       { 
+    title: "BlendArt023", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt023/0001-0360.mp4", alt: "Animation" },
+      ]
+      },
+       { 
+    title: "BlendArt021", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt021/0001-0360.mp4", alt: "Animation" },
+      ]
+      },
+      { 
+    title: "BlendArt018", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt018/0001-0500.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt018/BlendArt018_001.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt017", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt017/0001-0360.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt017/BlendArt017_1.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt015", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt015/0001-0360.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt015/BlendArt015.blend0008.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt014", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt014/0001-0400.mp4", alt: "Animation" },
+      { type: "video", src: "assets/BlendArt014/0001-0600.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt014/BlendArt014_1.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt012", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt012/0001-0500.mp4", alt: "Animation" },
+      ]
+      },
+      { 
+    title: "BlendArt011", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt011/0001-0500.mp4", alt: "Animation" },
+      ]
+      },
+      { 
+    title: "BlendArt010", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt010/0001-0360.mp4", alt: "Animation" },
+      ]
+      },
+      { 
+    title: "BlendArt009", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt009/0001-0360.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt009/BlendArt009_1.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt005", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt005/Blendart005_1.png", alt: "Art" },
+      { type: "image", src: "assets/BlendArt005/Blendart005_2.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt004", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt004/0001-0120.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt004/BlendArt004.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt003", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/BlendArt003/BlendArt003.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "BlendArt002", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt002/0001-0100.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt002/BlendArt002.png", alt: "Art" },
+      ]
+      },
+       { 
+    title: "BlendArt001", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "video", src: "assets/BlendArt001/0001-0050.mp4", alt: "Animation" },
+      { type: "image", src: "assets/BlendArt001/BlendArt001.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "Art001", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/Art001/Kunst1.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "Art002", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/Art002/KunstTorus1.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "Art003", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/Art003/Space1.png", alt: "Art" },
+      { type: "image", src: "assets/Art003/Space2.png", alt: "Art" },
+      { type: "image", src: "assets/Art003/Space3.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "Cube", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/Cube/WürfelKunst2.png", alt: "Art" },
+      ]
+      },
+      { 
+    title: "Donut", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/Donut/Donut002.png", alt: "Art" },
+      ]
+      },
+       { 
+    title: "Planeten", 
+    desc: "Animation", 
+    cat: "Art", 
+    date: "2025-07-28",
+    media: [
+      { type: "image", src: "assets/Planeten/EisErde1.png", alt: "Art" },
+      { type: "video", src: "assets/Planeten/0001-0150.mp4", alt: "Art" },
+      { type: "image", src: "assets/Planeten/EisErde4.png", alt: "Art" },
+      { type: "image", src: "assets/Planeten/GreenPlanet.png", alt: "Art" },
+      { type: "image", src: "assets/Planeten/LilaPlanet.png", alt: "Art" },
+      ]
+      },
+    ];
+
+
+    /* ============================================================
+       HELPER FUNCTIONS
+    ============================================================ */
+    function getYouTubeEmbedUrl(videoId) {
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&showinfo=0&modestbranding=1`;
+    }
+
+    function isVideoMedia(media) {
+      return media.type === 'video' || media.type === 'youtube';
+    }
+
+    function getFirstImageOrVideoThumbnail(project) {
+      if (!project.media || !Array.isArray(project.media) || project.media.length === 0) {
+        return { src: project.src, alt: project.alt || project.title, type: 'image' };
+      }
+      
+      const firstMedia = project.media[0];
+      if (firstMedia.type === 'youtube' && firstMedia.thumbnail) {
+        return { src: firstMedia.thumbnail, alt: firstMedia.alt, type: 'image' };
+      }
+      return firstMedia;
+    }
+
+    function hasMultipleMedia(project) {
+      return project.media && Array.isArray(project.media) && project.media.length > 1;
+    }
+
+    function hasVideoContent(project) {
+      if (!project.media || !Array.isArray(project.media)) return false;
+      return project.media.some(media => isVideoMedia(media));
+    }
+
+    /* ============================================================
+       TYPING – Überschrift
+    ============================================================ */
+    const TITLES = ["DIGITAL ARTISTRY", "BLENDER MASTERWORKS", "3D VISIONS", "MOTION GRAPHICS"]; 
+    const typingEl = document.getElementById('typing');
+    let tIndex = 0, charIndex = TITLES[0].length, deleting = true;
+    function typeCycle(){
+      const full = TITLES[tIndex];
+      typingEl.textContent = full.slice(0, charIndex);
+      if(!deleting && charIndex === full.length){ setTimeout(()=> deleting = true, 1100); }
+      if(deleting && charIndex === 0){ tIndex = (tIndex + 1) % TITLES.length; deleting = false; }
+      charIndex += deleting ? -1 : 1;
+      const speed = deleting ? 34 : 64;
+      setTimeout(typeCycle, speed);
+    }
+    setTimeout(typeCycle, 1000);
+
+    /* ============================================================
+       PARALLAX – subtil
+    ============================================================ */
+    const parallaxEl = document.querySelector('.parallax');
+    const blobs = [...document.querySelectorAll('.blob')];
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY * 0.05;
+      parallaxEl.style.transform = `translate3d(0, ${y}px, 0)`;
+    }, { passive: true });
+    // Maus-Parallax sehr reduziert
+    window.addEventListener('mousemove', (e)=>{
+      const { innerWidth:w, innerHeight:h } = window;
+      const xRel = (e.clientX / w - .5) * 2; // -1..1
+      const yRel = (e.clientY / h - .5) * 2;
+      blobs.forEach(b => {
+        const d = parseFloat(b.dataset.depth || 0.08);
+        b.style.transform = `translate(${xRel*12*d}px, ${yRel*10*d}px)`;
+      });
+    });
+
+    /* ============================================================
+       GALLERY RENDERING – Masonry + Reveal + Video Support
+    ============================================================ */
+    const gallery = document.getElementById('gallery');
+    const searchInput = document.getElementById('search');
+    const filterSelect = document.getElementById('filter');
+    const sortSelect   = document.getElementById('sort');
+
+    // Filteroptionen füllen
+    const cats = Array.from(new Set(PROJECTS.map(p=>p.cat))).sort();
+    cats.forEach(c => { const o = document.createElement('option'); o.value=c; o.textContent=c; filterSelect.appendChild(o); });
+
+    let state = { query:'', cat:'all', sort:'date-desc' };
+    let pool = [...PROJECTS];
+
+    function applyFilters(){
+      const q = state.query.toLowerCase();
+      let res = pool.filter(p => (state.cat==='all'||p.cat===state.cat) && (p.title.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q)));
+      switch(state.sort){
+        case 'date-asc': res.sort((a,b)=> new Date(a.date)-new Date(b.date)); break;
+        case 'title-asc': res.sort((a,b)=> a.title.localeCompare(b.title)); break;
+        case 'title-desc': res.sort((a,b)=> b.title.localeCompare(a.title)); break;
+        default: res.sort((a,b)=> new Date(b.date)-new Date(a.date));
+      }
+      return res;
+    }
+
+    const BATCH = 8; let rendered = 0, queue = applyFilters();
+
+    function resetAndRender(){
+      gallery.setAttribute('aria-busy','true');
+      gallery.innerHTML = '';
+      rendered = 0; queue = applyFilters();
+      loadMore();
+      gallery.setAttribute('aria-busy','false');
+    }
+
+    function loadMore(){
+      const slice = queue.slice(rendered, rendered + BATCH);
+      slice.forEach((p, i) => gallery.appendChild(createItem(p, rendered + i)));
+      rendered += slice.length;
+      if (rendered < queue.length) observeScroll();
+      revealWatcher.observeBatch();
+    }
+
+    function createItem(p, idx){
+      const item = document.createElement('article');
+      item.className = 'item reveal';
+      item.style.transitionDelay = `${(idx%8)*36}ms`;
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.tabIndex = 0; card.setAttribute('role', 'button'); card.setAttribute('aria-label', `${p.title} öffnen`);
+
+      const meta = document.createElement('div'); meta.className='meta';
+      const tag1 = document.createElement('span'); tag1.className='tag'; tag1.textContent = p.cat;
+      const tag2 = document.createElement('span'); tag2.className='tag'; tag2.textContent = new Date(p.date).toLocaleDateString();
+      meta.append(tag1, tag2);
+
+      // Media count indicator
+      if(hasMultipleMedia(p)) {
+        const mediaCount = document.createElement('div');
+        mediaCount.className = 'media-count';
+        const videoCount = p.media.filter(m => isVideoMedia(m)).length;
+        const imageCount = p.media.filter(m => m.type === 'image').length;
+        
+        let countText = '';
+        if (videoCount > 0 && imageCount > 0) {
+          countText = `${p.media.length} Medien`;
+        } else if (videoCount > 0) {
+          countText = `${videoCount} Video${videoCount > 1 ? 's' : ''}`;
+        } else {
+          countText = `${imageCount} Bilder`;
+        }
+        mediaCount.textContent = countText;
+        card.appendChild(mediaCount);
+      }
+
+      const media = document.createElement('div'); media.className='media skeleton';
+      
+      // Get first media for preview
+      const firstMedia = getFirstImageOrVideoThumbnail(p);
+      
+      if (firstMedia.type === 'video') {
+        const video = document.createElement('video');
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.preload = idx < 2 ? 'auto' : 'metadata'; // Erste 2 Videos vollständig preloaden
+        video.alt = firstMedia.alt || p.title;
+        video.dataset.src = firstMedia.src;
+        if (firstMedia.poster) video.poster = firstMedia.poster;
+        
+        // Auto-play on hover
+        card.addEventListener('mouseenter', () => {
+          if (video.src) video.play().catch(() => {});
+        });
+        card.addEventListener('mouseleave', () => {
+          if (video.src) video.pause();
+        });
+        
+        videoObserver.observe(video);
+        media.appendChild(video);
+        
+        // Add play indicator for videos
+        const playIndicator = document.createElement('div');
+        playIndicator.className = 'play-indicator';
+        media.appendChild(playIndicator);
+        
+      } else {
+        const img = document.createElement('img');
+        img.alt = firstMedia.alt || p.title;
+        img.loading = idx < 4 ? 'eager' : 'lazy'; // Erste 4 Bilder sofort laden
+        img.decoding = 'async';
+        img.src = '';
+        img.dataset.src = firstMedia.src;
+        imageObserver.observe(img);
+        media.appendChild(img);
+        
+        // Add play indicator if project contains videos
+        if (hasVideoContent(p)) {
+          const playIndicator = document.createElement('div');
+          playIndicator.className = 'play-indicator';
+          media.appendChild(playIndicator);
+        }
+      }
+
+      const overlay = document.createElement('div'); overlay.className='overlay';
+      const h3 = document.createElement('h3'); h3.textContent = p.title;
+      const d = document.createElement('p'); d.textContent = p.desc || '';
+      overlay.append(h3, d);
+
+      card.append(meta, media, overlay);
+      item.appendChild(card);
+
+      card.addEventListener('click', ()=> openLightbox(p));
+      card.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); openLightbox(p);} });
+
+      return item;
+    }
+
+    // Reveal Observer
+    const revealWatcher = (()=>{
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(ent=>{ if(ent.isIntersecting){ ent.target.classList.add('in'); io.unobserve(ent.target); } });
+      }, { threshold: .08 });
+      function observeBatch(){ document.querySelectorAll('.reveal:not(.in)').forEach(el=> io.observe(el)); }
+      return { observeBatch };
+    })();
+
+    // Image lazy IO
+    const imageObserver = new IntersectionObserver((entries)=>{
+      entries.forEach(ent=>{
+        if(ent.isIntersecting){
+          const img = ent.target; const src = img.dataset.src; if(!src) return;
+          const tmp = new Image(); tmp.onload = ()=>{ img.src = src; img.parentElement.classList.remove('skeleton'); }; tmp.src = src;
+          imageObserver.unobserve(img);
+        }
+      });
+    }, { rootMargin: '150px' });
+
+    // Video lazy IO
+    const videoObserver = new IntersectionObserver((entries)=>{
+      entries.forEach(ent=>{
+        if(ent.isIntersecting){
+          const video = ent.target; const src = video.dataset.src; if(!src) return;
+          video.src = src;
+          video.parentElement.classList.remove('skeleton');
+          videoObserver.unobserve(video);
+        }
+      });
+    }, { rootMargin: '150px' });
+
+    // Infinite Scroll sentinel
+    let sentinel = null, sentinelIO = null;
+   function observeScroll(){
+  if(sentinel) sentinel.remove();
+  sentinel = document.createElement('div'); 
+  sentinel.style.height='1px';
+  sentinel.style.gridColumn = '1 / -1'; // <- DIESE ZEILE HINZUFÜGEN
+  sentinel.style.visibility = 'hidden'; // <- UND DIESE
+  gallery.appendChild(sentinel);
+  if(sentinelIO) sentinelIO.disconnect();
+  sentinelIO = new IntersectionObserver((entries)=>{ 
+    if(entries.some(e=>e.isIntersecting)){ 
+      sentinelIO.disconnect(); 
+      loadMore(); 
+    } 
+  }, { rootMargin: '800px' });
+  sentinelIO.observe(sentinel);
+}
+
+    // Controls
+    searchInput.addEventListener('input', (e)=>{ state.query = e.target.value; resetAndRender(); });
+    filterSelect.addEventListener('change', (e)=>{ state.cat = e.target.value; resetAndRender(); });
+    sortSelect.addEventListener('change', (e)=>{ state.sort = e.target.value; resetAndRender(); });
+
+    // Init
+    resetAndRender();
+
+    // Shuffle → öffnet zufälliges Projekt
+    document.getElementById('shuffle').addEventListener('click', ()=>{
+      const list = applyFilters(); if(!list.length) return;
+      const p = list[Math.floor(Math.random()*list.length)];
+      openLightbox(p);
+    });
+
+    /* ============================================================
+       LIGHTBOX – Multi-Media (Images + Videos + YouTube)
+    ============================================================ */
+    const lb = document.getElementById('lightbox');
+    const lbMediaContainer = document.getElementById('lb-media-container');
+    const lbTitle = document.getElementById('lb-title');
+    const lbDesc = document.getElementById('lb-desc');
+    const lbCat = document.getElementById('lb-cat');
+    const lbDate = document.getElementById('lb-date');
+    const lbClose = document.getElementById('lb-close');
+    const lbThumbnails = document.getElementById('lb-thumbnails');
+
+    let currentProject = null;
+    let currentMediaIndex = 0;
+    let lbNavPrev, lbNavNext, lbCounter;
+
+    function createNavigationElements() {
+      // Navigation buttons
+      lbNavPrev = document.createElement('button');
+      lbNavPrev.className = 'lb-nav lb-prev';
+      lbNavPrev.innerHTML = '‹';
+      lbNavPrev.setAttribute('aria-label', 'Vorheriges Medium');
+      lbNavPrev.addEventListener('click', prevMedia);
+
+      lbNavNext = document.createElement('button');
+      lbNavNext.className = 'lb-nav lb-next';
+      lbNavNext.innerHTML = '›';
+      lbNavNext.setAttribute('aria-label', 'Nächstes Medium');
+      lbNavNext.addEventListener('click', nextMedia);
+
+      // Counter
+      lbCounter = document.createElement('div');
+      lbCounter.className = 'lb-counter';
+
+      // Keyboard hint
+      const kbHint = document.createElement('div');
+      kbHint.className = 'kb-hint';
+      kbHint.textContent = '← → Pfeiltasten zum Navigieren';
+
+      lbMediaContainer.append(lbNavPrev, lbNavNext, lbCounter, kbHint);
+    }
+
+    function openLightbox(project, mediaIndex = 0){
+      currentProject = project; 
+      currentMediaIndex = mediaIndex;
+      
+      if(!project.media || !Array.isArray(project.media)) {
+        project.media = [{ type: 'image', src: project.src, alt: project.alt || project.title }];
+      }
+      
+      // Clear previous content
+      lbMediaContainer.innerHTML = '';
+      
+      // Create navigation elements
+      createNavigationElements();
+      
+      updateLightboxContent(); 
+      updateNavigationButtons(); 
+      createThumbnails();
+      
+      lb.classList.add('open'); 
+      document.body.style.overflow = 'hidden';
+      lbMediaContainer.focus();
+    }
+
+    function updateLightboxContent() {
+      const currentMedia = currentProject.media[currentMediaIndex];
+      
+      // Remove existing media elements
+      const existingMedia = lbMediaContainer.querySelectorAll('img, video, iframe');
+      existingMedia.forEach(el => el.remove());
+      
+      // Create new media element
+      let mediaElement;
+      
+      if (currentMedia.type === 'video') {
+        mediaElement = document.createElement('video');
+        mediaElement.src = currentMedia.src;
+        mediaElement.controls = true;
+        mediaElement.autoplay = true;
+        mediaElement.muted = false;
+        if (currentMedia.poster) mediaElement.poster = currentMedia.poster;
+        
+      } else if (currentMedia.type === 'youtube') {
+        mediaElement = document.createElement('iframe');
+        mediaElement.src = getYouTubeEmbedUrl(currentMedia.videoId);
+        mediaElement.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        mediaElement.allowFullscreen = true;
+        
+      } else {
+        mediaElement = document.createElement('img');
+        mediaElement.src = currentMedia.src;
+      }
+      
+      mediaElement.alt = currentMedia.alt || currentProject.title;
+      
+      // Insert before navigation elements
+      lbMediaContainer.insertBefore(mediaElement, lbNavPrev);
+      
+      // Update info
+      lbTitle.textContent = currentProject.title; 
+      lbDesc.textContent = currentProject.desc || '';
+      lbCat.textContent = currentProject.cat; 
+      lbDate.textContent = new Date(currentProject.date).toLocaleDateString();
+      lbCounter.textContent = `${currentMediaIndex + 1} / ${currentProject.media.length}`;
+    }
+
+    function updateNavigationButtons() {
+      lbNavPrev.disabled = currentMediaIndex === 0;
+      lbNavNext.disabled = currentMediaIndex === currentProject.media.length - 1;
+      
+      if (currentProject.media.length <= 1) { 
+        lbNavPrev.style.display = 'none'; 
+        lbNavNext.style.display = 'none';
+        lbCounter.style.display = 'none';
+      } else { 
+        lbNavPrev.style.display = 'flex'; 
+        lbNavNext.style.display = 'flex'; 
+        lbCounter.style.display = 'block';
+      }
+    }
+
+    function createThumbnails() {
+      lbThumbnails.innerHTML = '';
+      
+      if (currentProject.media.length <= 1) { 
+        lbThumbnails.style.display = 'none'; 
+        return; 
+      }
+      
+      lbThumbnails.style.display = 'flex';
+      
+      currentProject.media.forEach((media, index) => {
+        const thumb = document.createElement('img');
+        
+        // Set thumbnail source
+        if (media.type === 'youtube' && media.thumbnail) {
+          thumb.src = media.thumbnail;
+        } else if (media.type === 'video' && media.poster) {
+          thumb.src = media.poster;
+        } else if (media.type === 'image') {
+          thumb.src = media.src;
+        } else {
+          // Fallback for videos without poster
+          thumb.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA4MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjQwIiB5PSIzNSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiNGRkYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlZpZGVvPC90ZXh0Pgo8L3N2Zz4K';
+        }
+        
+        thumb.alt = media.alt || `${currentProject.title} - Medium ${index + 1}`;
+        thumb.className = `lb-thumbnail ${index === currentMediaIndex ? 'active' : ''}`;
+        
+        if (isVideoMedia(media)) {
+          thumb.classList.add('video');
+        }
+        
+        thumb.addEventListener('click', () => navigateToMedia(index));
+        lbThumbnails.appendChild(thumb);
+      });
+    }
+
+    function navigateToMedia(index) { 
+      if (index < 0 || index >= currentProject.media.length) return; 
+      currentMediaIndex = index; 
+      updateLightboxContent(); 
+      updateNavigationButtons(); 
+      updateThumbnails(); 
+    }
+    
+    function updateThumbnails() { 
+      const thumbs = lbThumbnails.querySelectorAll('.lb-thumbnail'); 
+      thumbs.forEach((t, i) => t.classList.toggle('active', i === currentMediaIndex)); 
+    }
+    
+    function nextMedia() { 
+      if (currentMediaIndex < currentProject.media.length - 1) navigateToMedia(currentMediaIndex + 1); 
+    }
+    
+    function prevMedia() { 
+      if (currentMediaIndex > 0) navigateToMedia(currentMediaIndex - 1); 
+    }
+    
+    function closeLightbox() { 
+      // Stop any playing videos
+      const videos = lbMediaContainer.querySelectorAll('video');
+      videos.forEach(video => video.pause());
+      
+      lb.classList.remove('open'); 
+      document.body.style.overflow = ''; 
+      currentProject = null; 
+      currentMediaIndex = 0; 
+    }
+
+    // Event listeners
+    lbClose.addEventListener('click', closeLightbox);
+    lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); });
+
+    window.addEventListener('keydown', (e) => {
+      if (!lb.classList.contains('open')) return;
+      switch(e.key) {
+        case 'Escape': closeLightbox(); break;
+        case 'ArrowLeft': e.preventDefault(); prevMedia(); break;
+        case 'ArrowRight': e.preventDefault(); nextMedia(); break;
+        case ' ': e.preventDefault(); nextMedia(); break;
+      }
+    });
+    // Slide-Out Menü Steuerung
+const sideMenu = document.getElementById('sideMenu');
+const openMenu = document.getElementById('openMenu');
+const closeMenu = document.getElementById('closeMenu');
+
+function openSideMenu() {
+  sideMenu.classList.add('open');
+}
+function closeSideMenu() {
+  sideMenu.classList.remove('open');
+}
+
+openMenu.addEventListener('click', openSideMenu);
+closeMenu.addEventListener('click', closeSideMenu);
+
+// NEU: Menü schließen, wenn Maus den Bereich verlässt
+sideMenu.addEventListener('mouseleave', closeSideMenu);
+
+  </script>
+</body>
+</html>
+    

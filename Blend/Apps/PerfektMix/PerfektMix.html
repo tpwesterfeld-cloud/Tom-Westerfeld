@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alkohol-Mischrechner</title>
+<style>
+  body { margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f7f9fc; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; font-size: 1.8rem; font-weight: bold; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; }
+  .input-group { display: flex; flex-direction: column; margin: 1rem 0; width: 100%; max-width: 400px; }
+  label { margin-bottom: 0.5rem; font-weight: 500; }
+  input[type=range], input[type=number], select { width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc; margin-bottom: 0.5rem; background-color: #fff; color: #333; }
+  .main-result { font-size: 1.4rem; color: #007bff; margin: 1.5rem 0; text-align: center; }
+  .warning { font-weight: bold; margin: 0.5rem 0; text-align: center; }
+  button { margin: 0.5rem; padding: 0.7rem 1.5rem; background-color: #28a745; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-weight: 500; transition: 0.2s; }
+  button:hover { opacity: 0.85; }
+  ul { list-style: none; padding: 0; max-width: 400px; margin: 1rem auto; }
+  li { padding: 0.5rem; border-bottom: 1px solid #e0e0e0; cursor: pointer; }
+  li:hover { background-color: #e8f0fe; }
+  footer { text-align: center; padding: 1.5rem; font-size: 0.9rem; background-color: #fff; box-shadow: 0 -2px 4px rgba(0,0,0,0.05); }
+  canvas { margin: 1rem 0; max-width: 100%; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<header>
+  🍷 Alkohol-Mischrechner
+</header>
+<main>
+  <div id="calculatorSection">
+    <div class="input-group">
+      <label>Ziel-Alkoholgehalt (%)</label>
+      <input type="range" id="targetSlider" min="0" max="70" value="35" oninput="updateTarget(this.value)">
+      <input type="number" id="targetInput" min="0" max="70" value="35" oninput="updateTarget(this.value)">
+    </div>
+    <div class="input-group">
+      <label>Gesamtmenge</label>
+      <input type="number" id="totalVolume" value="500" onchange="calculate()">
+      <select id="unit" onchange="calculate()">
+        <option value="ml">ml</option>
+        <option value="cl">cl</option>
+        <option value="l">l</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label>Haupt-Spirituose</label>
+      <select id="mainSpirit" onchange="calculate()">
+        <option value="Wodka">Wodka (40%)</option>
+        <option value="Whisky">Whisky (40%)</option>
+        <option value="Whisky stark">Whisky stark (50%)</option>
+        <option value="Rum">Rum (37.5%)</option>
+        <option value="Rum stark">Rum stark (75%)</option>
+        <option value="Gin">Gin (40%)</option>
+        <option value="Gin stark">Gin stark (47%)</option>
+        <option value="Custom">Benutzerdefiniert</option>
+      </select>
+      <input type="number" id="customAbv" min="0" max="100" placeholder="%" style="display:none;" onchange="calculate()">
+    </div>
+    <div class="main-result" id="result"></div>
+    <div class="warning" id="warning"></div>
+    <canvas id="pieChart" width="200" height="200"></canvas>
+    <button onclick="saveRecipe()">Rezept speichern</button>
+    <button onclick="resetForm()">Zurücksetzen</button>
+    <h2>Gespeicherte Rezepte</h2>
+    <ul id="savedRecipes"></ul>
+  </div>
+</main>
+<footer>Verantwortungsvoller Umgang mit Alkohol. Nicht für Minderjährige.</footer>
+<script>
+const spiritABV = {'Wodka':40,'Whisky':40,'Whisky stark':50,'Rum':37.5,'Rum stark':75,'Gin':40,'Gin stark':47,'Custom':0};
+let chartTimeout; let chart;
+function updateTarget(val){ document.getElementById('targetSlider').value=val; document.getElementById('targetInput').value=val; calculate(true); }
+document.getElementById('mainSpirit').addEventListener('change', function(){ document.getElementById('customAbv').style.display = this.value==='Custom' ? 'inline' : 'none'; calculate(); });
+function calculate(delayed=false){
+  const target=parseFloat(document.getElementById('targetInput').value);
+  const total=parseFloat(document.getElementById('totalVolume').value);
+  const unit=document.getElementById('unit').value;
+  let main=document.getElementById('mainSpirit').value;
+  let abvMain=main==='Custom'?parseFloat(document.getElementById('customAbv').value):spiritABV[main];
+  const totalMl=unit==='ml'?total: unit==='cl'?total*10: total*1000;
+  let volMain=totalMl*target/abvMain;
+  let volWater=totalMl-volMain;
+  volMain=Math.max(0,volMain.toFixed(1));
+  volWater=Math.max(0,volWater.toFixed(1));
+  document.getElementById('result').textContent=`${volMain} ${unit} ${main} + ${volWater} Wasser = ${total} ${unit} bei ${target}%`;
+  const warning=document.getElementById('warning');
+  if(target>50){ warning.textContent='Sehr starke Mischung - Extrem vorsichtig!'; warning.style.color='#ff4444';}
+  else if(target>40){warning.textContent='Starke Mischung - Vorsicht!'; warning.style.color='#ffa500';}
+  else{warning.textContent='';}
+  if(delayed){ clearTimeout(chartTimeout); chartTimeout=setTimeout(drawChart,500);} else{ drawChart(); }
+}
+function drawChart(){
+  const target=parseFloat(document.getElementById('targetInput').value);
+  const total=parseFloat(document.getElementById('totalVolume').value);
+  const unit=document.getElementById('unit').value;
+  let main=document.getElementById('mainSpirit').value;
+  let abvMain=main==='Custom'?parseFloat(document.getElementById('customAbv').value):spiritABV[main];
+  const totalMl=unit==='ml'?total: unit==='cl'?total*10: total*1000;
+  let volMain=totalMl*target/abvMain;
+  let volWater=totalMl-volMain;
+  volMain=Math.max(0,volMain.toFixed(1));
+  volWater=Math.max(0,volWater.toFixed(1));
+  const ctx=document.getElementById('pieChart').getContext('2d');
+  if(chart) chart.destroy();
+  chart=new Chart(ctx,{type:'pie',data:{labels:[main,'Wasser'],datasets:[{data:[volMain,volWater],backgroundColor:['#007bff','#ffc107']}]},options:{plugins:{legend:{labels:{color:'#333'}}}}});
+}
+function saveRecipe(){
+  const saved=JSON.parse(localStorage.getItem('recipes')||'[]');
+  saved.push({text:document.getElementById('result').textContent,target:document.getElementById('targetInput').value,total:document.getElementById('totalVolume').value,unit:document.getElementById('unit').value,main:document.getElementById('mainSpirit').value,custom:document.getElementById('customAbv').value});
+  localStorage.setItem('recipes',JSON.stringify(saved)); renderSaved();
+}
+function renderSaved(){
+  const list=document.getElementById('savedRecipes'); list.innerHTML='';
+  const saved=JSON.parse(localStorage.getItem('recipes')||'[]');
+  saved.forEach((r,i)=>{ const li=document.createElement('li'); li.textContent=r.text; li.onclick=()=>{document.getElementById('targetInput').value=r.target; document.getElementById('targetSlider').value=r.target; document.getElementById('totalVolume').value=r.total; document.getElementById('unit').value=r.unit; document.getElementById('mainSpirit').value=r.main; document.getElementById('customAbv').value=r.custom; document.getElementById('customAbv').style.display=r.main==='Custom'?'inline':'none'; calculate();}; list.appendChild(li); });
+}
+function resetForm(){
+  document.getElementById('targetSlider').value=35; document.getElementById('targetInput').value=35;
+  document.getElementById('totalVolume').value=500; document.getElementById('unit').value='ml';
+  document.getElementById('mainSpirit').value='Wodka'; document.getElementById('customAbv').value=''; document.getElementById('customAbv').style.display='none'; calculate();
+}
+renderSaved(); calculate();
+</script>
+</body>
+</html>

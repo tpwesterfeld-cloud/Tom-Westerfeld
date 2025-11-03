@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RASPBERRY PI PROJEKTE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 120px 20px 80px;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+        }
+
+        .logo {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            margin-bottom: 30px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .tagline {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: #888888;
+            max-width: 800px;
+            margin: 0 auto 60px;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 20px 40px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: #666666;
+        }
+
+        .search-box input:focus {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .filter-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .filter-select option {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .filter-select:hover,
+        .filter-select:focus {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px 24px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn.primary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a1a1a;
+            border-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .btn.primary:hover {
+            background: #ffffff;
+            border-color: #ffffff;
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .project-card:hover::before {
+            opacity: 1;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 220px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+        }
+
+        .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .project-card:hover .project-image img {
+            transform: scale(1.05);
+        }
+
+        .image-count {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .project-content {
+            padding: 24px;
+        }
+
+        .project-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .project-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 0.8rem;
+            color: #888888;
+            flex-wrap: wrap;
+        }
+
+        .project-category {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .project-description {
+            color: #aaaaaa;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.08);
+            color: #cccccc;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 400;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+
+        /* Modal */
+        .project-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            max-width: 900px;
+            max-height: 90vh;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 24px 24px 0;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #ffffff;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 0;
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+
+        .modal-images {
+            position: relative;
+            height: 350px;
+            background: #0f0f0f;
+        }
+
+        .modal-image-main {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .image-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .image-nav.prev { left: 16px; }
+        .image-nav.next { right: 16px; }
+
+        .image-indicators {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: #ffffff;
+        }
+
+        .modal-info {
+            padding: 24px;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 16px;
+        }
+
+        .modal-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .modal-description {
+            color: #aaaaaa;
+            line-height: 1.7;
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 80px 20px 60px;
+            }
+
+            .logo {
+                font-size: 3rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .control-group {
+                width: 100%;
+                max-width: 400px;
+                justify-content: center;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .modal-content {
+                margin: 10px;
+                max-height: 95vh;
+            }
+
+            .modal-title {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* Custom scrollbar */
+        .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        /* ============ Menü (rechts) ============ */
+    .menu-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem; /* statt left */
+      font-size: 1.8rem;
+      cursor: pointer;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      padding: 0.6rem 0.9rem;
+      border-radius: 6px;
+      color: #fff;
+      z-index: 1001;
+      transition: background 0.3s ease;
+    }
+    .menu-toggle:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -260px; /* versteckt am Rand */
+      width: 240px;
+      height: 100%;
+      background: rgba(20,20,20,0.95);
+      backdrop-filter: blur(8px);
+      box-shadow: -4px 0 12px rgba(0,0,0,0.6); /* Schatten links */
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      transition: right 0.4s cubic-bezier(.22,1,.36,1);
+      z-index: 1000;
+    }
+    .side-menu.open {
+      right: 0;
+    }
+    .side-menu a {
+      text-decoration: none;
+      color: #eaeaea;
+      font-size: 1.1rem;
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .side-menu a:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateX(-5px); /* leicht nach links */
+    }
+    </style>
+</head>
+<body>
+     <!-- Menü Button -->
+  <button class="menu-toggle">☰</button>
+
+  <!-- Seitenmenü -->
+  <nav class="side-menu" id="sideMenu">
+    <a href="index.html">Startseite</a>
+    <a href="Games.htm">Games</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+  </nav>
+    <div class="header">
+        <h1 class="logo">RASPBERRY PI PROJEKTE</h1>
+        <p class="tagline">
+            Innovative Raspberry Pi Projekte – kreativ entwickelt,<br>
+            präzise dokumentiert und elegant präsentiert.
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Suche nach Projekten..." onkeyup="filterProjects()">
+            </div>
+            
+            <select class="filter-select" id="categoryFilter" onchange="filterProjects()">
+                <option value="">Alle Kategorien</option>
+                <option value="IoT">IoT</option>
+                <option value="Robotik">Robotik</option>
+                <option value="Smart Home">Smart Home</option>
+                <option value="Sensoren">Sensoren</option>
+                <option value="Display">Display</option>
+                <option value="Kamera">Kamera</option>
+            </select>
+            
+            <select class="filter-select" id="sortFilter" onchange="sortProjects()">
+                <option value="newest">Neueste zuerst</option>
+                <option value="oldest">Älteste zuerst</option>
+                <option value="alphabetical">Alphabetisch</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="projects-grid" id="projectsGrid">
+        <!-- Projects will be rendered here -->
+    </div>
+
+    <!-- Project Detail Modal -->
+    <div class="project-modal" id="projectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-images" id="modalImages">
+                    <img id="modalMainImage" class="modal-image-main" src="" alt="">
+                    <button class="image-nav prev" id="prevImage" onclick="changeImage(-1)">‹</button>
+                    <button class="image-nav next" id="nextImage" onclick="changeImage(1)">›</button>
+                    <div class="image-indicators" id="imageIndicators"></div>
+                </div>
+                <div class="modal-info">
+                    <h2 class="modal-title" id="modalTitle"></h2>
+                    <div class="modal-meta" id="modalMeta"></div>
+                    <div class="modal-description" id="modalDescription"></div>
+                    <div class="project-tags" id="modalTags"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let projects = [
+            {
+                id: 1,
+                title: "Smart Home Dashboard",
+                category: "IoT",
+                description: "Ein umfassendes Dashboard zur Steuerung aller Smart Home Geräte mit Raspberry Pi. Das System integriert verschiedene Sensoren und Aktoren und bietet eine benutzerfreundliche Web-Oberfläche zur Überwachung und Steuerung. Features umfassen Temperaturüberwachung, automatische Lichtsteuerung, Sicherheitssystem mit Bewegungsmeldern und Push-Benachrichtigungen bei Ereignissen.",
+                detailedDescription: "Dieses Projekt implementiert ein vollständiges Smart Home System basierend auf einem Raspberry Pi 4. Das Dashboard nutzt Flask als Backend und React für das Frontend. Verschiedene Sensoren (DHT22 für Temperatur/Luftfeuchtigkeit, PIR für Bewegung, Rauchmelder) sind über GPIO angeschlossen. Das System speichert alle Daten in einer SQLite Datenbank und sendet Benachrichtigungen über Telegram Bot API. Die Weboberfläche ist responsive designed und funktioniert auf allen Geräten.",
+                tags: ["Python", "Flask", "GPIO", "Sensoren", "React", "SQLite"],
+                date: "2025-01-15",
+                images: [
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMzNzQxNTEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM0YjU1NjMiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzYwYTVmYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfj6EgU21hcnQgSG9tZTwvdGV4dD48dGV4dCB4PSI1MCUiIHk9IjU1JSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5NGEzYjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5EYXNoYm9hcmQ8L3RleHQ+PC9zdmc+",
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMyNTYzZWIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4YjVjZjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7wn5OKIE1vYmlsZSBBcHA8L3RleHQ+PC9zdmc+",
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMzNzQxNTEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM2MzY2ZjEiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZmlsbD0iI2Y4ZmFmYyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCflKcgSGFyZHdhcmU8L3RleHQ+PC9zdmc+"
+                ]
+            },
+            {
+                id: 2,
+                title: "Wetterstation mit API",
+                category: "Sensoren",
+                description: "Automatische Wetterstation mit DHT22 Sensor, Barometer und Windmesser. Daten werden in einer lokalen Datenbank gespeichert und über eine REST-API zugänglich gemacht. Das System bietet Echtzeit-Daten und historische Auswertungen.",
+                detailedDescription: "Diese Wetterstation sammelt kontinuierlich Wetterdaten und stellt sie über verschiedene Schnittstellen zur Verfügung. Der DHT22 misst Temperatur und Luftfeuchtigkeit, ein BMP280 erfasst Luftdruck und Höhe, während ein Anemometer die Windgeschwindigkeit bestimmt. Alle Daten werden minütlich erfasst und in einer PostgreSQL-Datenbank gespeichert. Eine REST-API ermöglicht den Zugriff auf aktuelle Werte und historische Daten. Ein grafisches Dashboard zeigt Trends und Statistiken an.",
+                tags: ["Python", "SQLite", "DHT22", "API", "BMP280", "PostgreSQL"],
+                date: "2025-01-10",
+                images: [
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YjU1NjMiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMzNzQxNTEiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzYwYTVmYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfjqYgV2V0dGVyPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzk0YTNiOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlN0YXRpb248L3RleHQ+PC9zdmc+",
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxZTI5M2IiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMzNzQxNTEiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZmlsbD0iI2E3OGJmYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfk4ogRGF0ZW4tQVBJPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk0YTNiOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVjaHR6ZWl0PC90ZXh0Pjwvc3ZnPg=="
+                ]
+            },
+            {
+                id: 3,
+                title: "LED Matrix Display",
+                category: "Display",
+                description: "Programmierbare 32x32 LED Matrix zur Anzeige von Text, Animationen und Echtzeit-Daten. Steuerung über Web-Interface oder mobile App mit verschiedenen Effekten und Anzeigemodi.",
+                detailedDescription: "Dieses Projekt nutzt eine 32x32 RGB LED Matrix (WS2812B) für vielseitige Anzeigen. Das System kann Text scrollen, Pixel-Art anzeigen, Wetterinformationen darstellen und sogar einfache Spiele wie Snake oder Tetris spielen. Die Steuerung erfolgt über ein React-basiertes Web-Interface, das auch Farb-Picker, Animation-Controls und Helligkeit-Einstellungen bietet. Ein Python-Backend verarbeitet die Anfragen und steuert die LEDs über die GPIO-Pins des Raspberry Pi.",
+                tags: ["Python", "LED", "Matrix", "Animation", "WebSocket", "React"],
+                date: "2025-01-05",
+                images: [
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMzNzQxNTEiLz48c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzY2NjZmZiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2ZmNjZjYyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjI0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkr4gTEVEPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iI2Y4ZmFmYyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1hdHJpeDwvdGV4dD48L3N2Zz4=",
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwZjBmMjMiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMzNzQxNTEiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZmlsbD0iIzYwYTVmYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkrEgQW5pbWF0aW9uZW48L3RleHQ+PC9zdmc+"
+                ]
+            },
+            {
+                id: 4,
+                title: "Überwachungskamera mit KI",
+                category: "Kamera",
+                description: "Intelligentes Kamerasystem mit Bewegungserkennung und KI-basierter Objekterkennung. Sendet Benachrichtigungen bei verdächtigen Aktivitäten und speichert automatisch Clips.",
+                detailedDescription: "Dieses fortschrittliche Überwachungssystem verwendet eine Raspberry Pi Kamera v2 zusammen mit OpenCV und TensorFlow Lite für Echtzeit-Objekterkennung. Das System kann Personen, Fahrzeuge und Tiere unterscheiden und filtert Fehlalarme durch Wettereinflüsse heraus. Bei erkannten Ereignissen werden automatisch 30-Sekunden-Clips gespeichert und Push-Benachrichtigungen über Telegram verschickt. Ein Live-Stream ist über das Web-Interface verfügbar, mit der Möglichkeit, Aufnahmen zu durchsuchen und herunterzuladen.",
+                tags: ["Python", "OpenCV", "TensorFlow", "Kamera", "KI", "Telegram"],
+                date: "2024-12-28",
+                images: [
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxZTI5M2IiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM0YjU1NjMiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzYwYTVmYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfk7cgS2FtZXJhPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzk0YTNiOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPm1pdCBLSTwvdGV4dD48L3N2Zz4=",
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMyNTYzZWIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4YjVjZjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7wn6SWIEJld2VndW5nPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iI2Y4ZmFmYyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVya2VubnVuZzwvdGV4dD48L3N2Zz4=",
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMzNzQxNTEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM2MzY2ZjEiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZmlsbD0iI2Y4ZmFmYyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkrEgTGl2ZSBTdHJlYW08L3RleHQ+PC9zdmc+"
+                ]
+            },
+            {
+                id: 5,
+                title: "Robot Vacuum Controller",
+                category: "Robotik",
+                description: "Autonomer Staubsauger-Roboter basierend auf Raspberry Pi mit Lidar-Navigation, automatischer Rückkehr zur Ladestation und App-Steuerung.",
+                detailedDescription: "Dieser selbstgebaute Staubsauger-Roboter nutzt einen Raspberry Pi 4 als Hauptcontroller und einen Arduino für die Low-Level-Motorsteuerung. Ein RPLidar A1 ermöglicht SLAM (Simultaneous Localization and Mapping) für die Navigation. Der Roboter erstellt eine Karte der Umgebung und plant effiziente Reinigungsrouten. Zusätzliche Sensoren wie Ultraschall und Bodensensoren verhindern Stürze und Kollisionen. Eine mobile App zeigt die Reinigungsfortschritte an und ermöglicht das Starten/Stoppen sowie das Setzen von No-Go-Zonen.",
+                tags: ["Python", "ROS", "Lidar", "SLAM", "Arduino", "Navigation"],
+                date: "2024-12-20",
+                images: [
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxZTI5M2IiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM0NjUzNjMiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzYwYTVmYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfpKYgUm9ib3RlcjwvdGV4dD48dGV4dCB4PSI1MCUiIHk9IjYwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM5NGEzYjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5WYWN1dW08L3RleHQ+PC9zdmc+",
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM4YjVjZjYiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM2MzY2ZjEiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7wn5ORIExpZGFyPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iI2Y4ZmFmYyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5hdmlnYXRpb248L3RleHQ+PC9zdmc>"
+                ]
+            },
+            {
+                id: 6,
+                title: "Hydroponisches Gewächshaus",
+                category: "IoT",
+                description: "Vollautomatisches Gewächshaus-System mit pH-Überwachung, Nährstoffdosierung, Klimakontrolle und Fernüberwachung über das Internet.",
+                detailedDescription: "Dieses komplexe IoT-System überwacht und steuert alle Aspekte eines hydroponischen Gewächshauses. pH- und EC-Sensoren messen kontinuierlich die Wasserqualität, während Peristaltikpumpen automatisch Nährstoffe und pH-Korrektoren dosieren. Temperatur-, Luftfeutigkeits- und Lichtsensoren steuern Heizung, Lüftung und LED-Wachstumslampen. Alle Daten werden über LoRaWAN an eine Cloud-Datenbank gesendet und über ein Dashboard visualisiert. Das System sendet Alerts bei kritischen Zuständen und ermöglicht Remote-Eingriffe.",
+                tags: ["Python", "IoT", "Sensoren", "LoRaWAN", "Automatisierung", "pH"],
+                date: "2024-12-15",
+                images: [
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwNjY2NzMiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwZjc0ODAiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzEwZjE2OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfjL8gR2V3w6RjaHNoYXVzPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iI2Y4ZmFmYyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPklvVDwvdGV4dD48L3N2Zz4=",
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxNjIxM2UiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMzNzQxNTEiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNDAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZmlsbD0iIzEwZjE2OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfp6ogU2Vuc29yZW48L3RleHQ+PHRleHQgeD0iNTAlIiB5PSI2MCUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjOTRhM2I4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+w5xiZXJ3YWNodW5nPC90ZXh0Pjwvc3ZnPg=="
+                ]
+            }
+        ];
+    const menuBtn = document.querySelector(".menu-toggle");
+    const sideMenu = document.getElementById("sideMenu");
+
+    menuBtn.addEventListener("click", () => {
+      sideMenu.classList.toggle("open");
+    });
+
+    // Menü schließt sich, wenn Maus den Bereich verlässt
+    sideMenu.addEventListener("mouseleave", () => {
+      sideMenu.classList.remove("open");
+    });
+        let currentImageIndex = 0;
+        let currentProject = null;
+
+        function renderProjects() {
+            const grid = document.getElementById('projectsGrid');
+            const filteredProjects = getFilteredProjects();
+            
+            grid.innerHTML = filteredProjects.map(project => `
+                <div class="project-card" onclick="openProjectModal(${project.id})">
+                    <div class="project-image">
+                        <img src="${project.images[0]}" alt="${project.title}" loading="lazy">
+                        ${project.images.length > 1 ? `<div class="image-count">📷 ${project.images.length}</div>` : ''}
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">${project.title}</h3>
+                        <div class="project-meta">
+                            <span class="project-category">${project.category}</span>
+                            <span>${formatDate(project.date)}</span>
+                        </div>
+                        <p class="project-description">${project.description.substring(0, 120)}${project.description.length > 120 ? '...' : ''}</p>
+                        <div class="project-tags">
+                            ${project.tags.slice(0, 4).map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            ${project.tags.length > 4 ? `<span class="tag">+${project.tags.length - 4}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getFilteredProjects() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            
+            return projects.filter(project => {
+                const matchesSearch = project.title.toLowerCase().includes(searchTerm) || 
+                                    project.description.toLowerCase().includes(searchTerm) ||
+                                    project.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                const matchesCategory = !categoryFilter || project.category === categoryFilter;
+                return matchesSearch && matchesCategory;
+            });
+        }
+
+        function filterProjects() {
+            renderProjects();
+        }
+
+        function sortProjects() {
+            const sortBy = document.getElementById('sortFilter').value;
+            
+            projects.sort((a, b) => {
+                switch(sortBy) {
+                    case 'oldest':
+                        return new Date(a.date) - new Date(b.date);
+                    case 'alphabetical':
+                        return a.title.localeCompare(b.title);
+                    case 'newest':
+                    default:
+                        return new Date(b.date) - new Date(a.date);
+                }
+            });
+            
+            renderProjects();
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('de-DE', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        function openProjectModal(id) {
+            currentProject = projects.find(p => p.id === id);
+            if (!currentProject) return;
+            
+            currentImageIndex = 0;
+            
+            // Fill modal content
+            document.getElementById('modalTitle').textContent = currentProject.title;
+            document.getElementById('modalDescription').innerHTML = currentProject.detailedDescription || currentProject.description;
+            
+            // Meta information
+            const metaHtml = `
+                <span class="project-category">${currentProject.category}</span>
+                <span>${formatDate(currentProject.date)}</span>
+                <span>📷 ${currentProject.images.length} Bild${currentProject.images.length !== 1 ? 'er' : ''}</span>
+            `;
+            document.getElementById('modalMeta').innerHTML = metaHtml;
+            
+            // Tags
+            document.getElementById('modalTags').innerHTML = 
+                currentProject.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+            
+            // Setup images
+            setupModalImages();
+            
+            // Show modal
+            document.getElementById('projectModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function setupModalImages() {
+            const mainImage = document.getElementById('modalMainImage');
+            const indicators = document.getElementById('imageIndicators');
+            const prevBtn = document.getElementById('prevImage');
+            const nextBtn = document.getElementById('nextImage');
+            
+            // Set main image
+            mainImage.src = currentProject.images[currentImageIndex];
+            
+            // Setup indicators
+            indicators.innerHTML = currentProject.images.map((_, index) => 
+                `<div class="indicator ${index === currentImageIndex ? 'active' : ''}" 
+                      onclick="setImageIndex(${index})"></div>`
+            ).join('');
+            
+            // Show/hide navigation buttons
+            if (currentProject.images.length <= 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                indicators.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'block';
+                nextBtn.style.display = 'block';
+                indicators.style.display = 'flex';
+            }
+        }
+
+        function changeImage(direction) {
+            if (!currentProject || currentProject.images.length <= 1) return;
+            
+            currentImageIndex += direction;
+            
+            if (currentImageIndex >= currentProject.images.length) {
+                currentImageIndex = 0;
+            } else if (currentImageIndex < 0) {
+                currentImageIndex = currentProject.images.length - 1;
+            }
+            
+            setupModalImages();
+        }
+
+        function setImageIndex(index) {
+            currentImageIndex = index;
+            setupModalImages();
+        }
+
+        function closeModal() {
+            document.getElementById('projectModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            currentProject = null;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('projectModal').style.display === 'flex') {
+                if (e.key === 'Escape') {
+                    closeModal();
+                } else if (e.key === 'ArrowLeft') {
+                    changeImage(-1);
+                } else if (e.key === 'ArrowRight') {
+                    changeImage(1);
+                }
+            }
+        });
+
+        // Click outside modal to close
+        document.getElementById('projectModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initial render
+        renderProjects();
+    </script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poker Chips Visual</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at center, #1c1c1c, #0a0a0a);
+      color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .app {
+      background: #222;
+      padding: 25px;
+      border-radius: 20px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0,0,0,0.6);
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);} 
+      to {opacity: 1; transform: translateY(0);}
+    }
+    input, button {
+      padding: 10px;
+      margin: 6px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    input {
+      width: 80%;
+      text-align: center;
+    }
+    button {
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: scale(1.07);
+      box-shadow: 0 0 12px rgba(255,255,255,0.25);
+    }
+    .chip {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      font-weight: bold;
+      color: white;
+      border: 6px dashed white;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      margin: 6px;
+      font-size: 16px;
+      position: relative;
+      background-image: radial-gradient(circle at center, rgba(255,255,255,0.15) 20%, transparent 70%);
+    }
+    .chip::after {
+      content: "";
+      position: absolute;
+      top: 10%;
+      left: 10%;
+      right: 10%;
+      bottom: 10%;
+      border: 2px solid rgba(255,255,255,0.7);
+      border-radius: 50%;
+    }
+    .chip.red { background-color: #e84118; }
+    .chip.blue { background-color: #3742fa; }
+    .chip.green { background-color: #2ecc71; }
+    .chip.black { background-color: #2f3542; }
+    .chip.custom { background-color: #ffa502; }
+    .reset { background: #3742fa; color: white; padding: 12px 24px; border-radius: 12px; }
+    .reset:hover { background: #273c75; }
+    .history {
+      margin-top: 20px;
+      background: #2c2c2c;
+      padding: 12px;
+      border-radius: 12px;
+      max-height: 160px;
+      overflow-y: auto;
+      text-align: left;
+      font-size: 14px;
+    }
+    .balance-box {
+      background: #333;
+      padding: 12px;
+      border-radius: 12px;
+      margin: 10px 0;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    }
+    .highlight {
+      color: #ffa502;
+      font-weight: bold;
+    }
+    .danger {
+      background: #e84118;
+      color: white;
+    }
+    .danger:hover { background: #c23616; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h2>🎲 Poker Chips Tracker</h2>
+    <div id="setup">
+      <p>Startbudget eingeben:</p>
+      <input type="number" id="startBudget" placeholder="€ Startbudget">
+      <button onclick="startGame()">Starten</button>
+    </div>
+
+    <div id="game" style="display:none;">
+      <div class="balance-box">
+        <h3>Aktuelles Guthaben: <span class="highlight">€<span id="balance">0</span></span></h3>
+        <h4>Aktueller Einsatz: <span class="highlight">€<span id="currentBet">0</span></span></h4>
+      </div>
+
+      <p>Chips setzen:</p>
+      <div id="chipButtons">
+        <button class="chip red" onclick="placeBet(10)">10</button>
+        <button class="chip blue" onclick="placeBet(25)">25</button>
+        <button class="chip green" onclick="placeBet(50)">50</button>
+        <button class="chip black" onclick="placeBet(100)">100</button>
+      </div>
+
+      <p>Eigene Chipgröße hinzufügen:</p>
+      <input type="number" id="customChip" placeholder="Chip Wert">
+      <button onclick="addCustomChip()">➕ Hinzufügen</button>
+
+      <p>Rundenverwaltung:</p>
+      <input type="number" id="roundAmount" placeholder="+/- Gewinn/Verlust">
+      <button onclick="endRound(true)">Gewinn eintragen</button>
+      <button onclick="endRound(false)" class="danger">Alles verloren</button>
+      <button onclick="allIn()" class="danger">ALL IN</button>
+      <button onclick="undoBet()">↩️ Einsatz zurücknehmen</button>
+
+      <div class="chips">
+        💰 Chips gesamt: <span id="chips">0</span>
+      </div>
+
+      <div class="history" id="history">
+        <strong>Runden-Historie:</strong>
+        <ul id="historyList"></ul>
+      </div>
+
+      <button class="reset" onclick="resetGame()">Neue Runde starten</button>
+    </div>
+  </div>
+
+  <script>
+    let balance = 0;
+    let history = [];
+    let currentBet = 0;
+    let lastBet = 0;
+
+    function startGame() {
+      const startBudget = parseInt(document.getElementById('startBudget').value);
+      if (!startBudget || startBudget <= 0) {
+        alert('Bitte gültiges Startbudget eingeben!');
+        return;
+      }
+      balance = startBudget;
+      history = [];
+      currentBet = 0;
+      document.getElementById('setup').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
+      updateUI();
+    }
+
+    function placeBet(amount) {
+      if (balance >= amount) {
+        balance -= amount;
+        currentBet += amount;
+        lastBet = amount;
+        history.push(`Einsatz: €${amount} (Aktueller Einsatz: €${currentBet})`);
+      } else {
+        alert('Nicht genug Chips!');
+      }
+      updateUI();
+    }
+
+    function addCustomChip() {
+      const value = parseInt(document.getElementById('customChip').value);
+      if (!value || value <= 0) return;
+      const btn = document.createElement('button');
+      btn.className = 'chip custom';
+      btn.innerText = value;
+      btn.onclick = () => placeBet(value);
+      document.getElementById('chipButtons').appendChild(btn);
+      document.getElementById('customChip').value = '';
+    }
+
+    function allIn() {
+      if (balance > 0) {
+        currentBet += balance;
+        history.push(`ALL IN mit €${balance}!`);
+        lastBet = balance;
+        balance = 0;
+        updateUI();
+      } else {
+        alert('Keine Chips mehr für ALL IN!');
+      }
+    }
+
+    function endRound(isWin) {
+      const amountInput = document.getElementById('roundAmount');
+      let amount = parseInt(amountInput.value);
+      if (isWin) {
+        if (!amount || amount <= 0) {
+          alert('Bitte gültigen Gewinn eingeben!');
+          return;
+        }
+        balance += amount + currentBet;
+        history.push(`+€${amount} gewonnen (Neues Guthaben: €${balance})`);
+      } else {
+        balance = 0;
+        history.push(`Alles verloren! Guthaben = €0`);
+      }
+      currentBet = 0;
+      amountInput.value = '';
+      updateUI();
+    }
+
+    function undoBet() {
+      if (lastBet > 0 && currentBet >= lastBet) {
+        balance += lastBet;
+        currentBet -= lastBet;
+        history.push(`Einsatz zurückgenommen: €${lastBet}`);
+        lastBet = 0;
+        updateUI();
+      } else {
+        alert('Kein Einsatz zum Zurücknehmen!');
+      }
+    }
+
+    function updateUI() {
+      document.getElementById('balance').innerText = balance;
+      document.getElementById('chips').innerText = balance;
+      document.getElementById('currentBet').innerText = currentBet;
+      const list = document.getElementById('historyList');
+      list.innerHTML = '';
+      history.slice().reverse().forEach(item => {
+        const li = document.createElement('li');
+        li.innerText = item;
+        list.appendChild(li);
+      });
+    }
+
+    function resetGame() {
+      document.getElementById('setup').style.display = 'block';
+      document.getElementById('game').style.display = 'none';
+      document.getElementById('startBudget').value = '';
+    }
+  </script>
+</body>
+</html>

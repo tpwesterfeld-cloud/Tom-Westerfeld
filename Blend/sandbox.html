@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meine Apps</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background: #111;
+      color: #eaeaea;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1rem;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 3rem;
+      letter-spacing: -1px;
+      font-weight: 700;
+      background: linear-gradient(120deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      font-family: 'Monaco', 'Consolas', monospace;
+      min-height: 3.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .typewriter-text {
+      border-right: 3px solid #667eea;
+      padding-right: 5px;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { border-color: #667eea; }
+      51%, 100% { border-color: transparent; }
+    }
+
+    /* Grid */
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .app-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .app-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+    }
+    .app-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .app-card:hover img {
+      transform: scale(1.05);
+    }
+    .app-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.1));
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1rem;
+      color: #fff;
+      backdrop-filter: blur(4px);
+    }
+    .app-overlay h2 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+    .app-overlay p {
+      margin: 0.3rem 0 0;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal.open {
+      display: flex;
+    }
+    .modal-content {
+      background: rgba(20,20,20,0.95);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 650px;
+      width: 90%;
+      color: #eaeaea;
+      backdrop-filter: blur(18px);
+      animation: fadeIn 0.4s ease;
+      text-align: center;
+    }
+    .modal-content img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      max-height: 280px;
+      object-fit: cover;
+    }
+    .modal-content h2 {
+      margin-top: 0;
+    }
+    .modal-content p {
+      font-size: 1rem;
+      margin-bottom: 1.2rem;
+    }
+    .download-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .btn {
+      padding: 0.7rem 1.4rem;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+    .btn:hover {
+      background: #2563eb;
+    }
+    .close {
+      margin-top: 0.5rem;
+      display: inline-block;
+      cursor: pointer;
+      color: #f87171;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+        /* ============ Menü (rechts) ============ */
+    .menu-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      font-size: 1.8rem;
+      cursor: pointer;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      padding: 0.6rem 0.9rem;
+      border-radius: 6px;
+      color: #fff;
+      z-index: 1001;
+      transition: background 0.3s ease;
+    }
+    .menu-toggle:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -260px;
+      width: 240px;
+      height: 100%;
+      background: rgba(20,20,20,0.95);
+      backdrop-filter: blur(8px);
+      box-shadow: -4px 0 12px rgba(0,0,0,0.6);
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      transition: right 0.4s cubic-bezier(.22,1,.36,1);
+      z-index: 1000;
+    }
+    .side-menu.open {
+      right: 0;
+    }
+    .side-menu a {
+      text-decoration: none;
+      color: #eaeaea;
+      font-size: 1.1rem;
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .side-menu a:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateX(-5px);
+    }
+  </style>
+</head>
+<body>
+<!-- Menü Button -->
+  <button class="menu-toggle">☰</button>
+
+  <!-- Seitenmenü -->
+  <nav class="side-menu" id="sideMenu">
+    <a href="index.html">Startseite</a>
+    <a href="games.html">Games</a>
+    <a href="raspberry.html">Raspberry Pi</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+  </nav>
+  <h1 id="typewriter-title"></h1>
+
+  <div class="app-grid">
+    <div class="app-card" onclick="openModal('StackIt', 'Poker Chips immer und überall dabei', 'Apps/Poker/ChatGPT Image 27. Aug. 2025, 20_12_35.png', 'Apps/Poker/Poker.html', 'Apps/Poker/pokerios.gz', 'Apps/Poker/poker.apk')">
+      <img src="Apps/Poker/ChatGPT Image 27. Aug. 2025, 20_12_35.png" alt="StackIt App">
+      <div class="app-overlay">
+        <h2>StackIt</h2>
+        <p>Poker Chips immer und überall dabei</p>
+      </div>
+    </div>
+
+    <div class="app-card" onclick="openModal('NextRound', 'Faire Runden', 'Apps/NextRound/ChatGPT Image 16. Aug. 2025, 19_11_54.png', 'Apps/NextRound/NEXTRound.html', 'Apps/NextRound/ios_source.tar.gz', 'Apps/NextRound/NEXTRound.apk')">
+      <img src="Apps/NextRound/ChatGPT Image 16. Aug. 2025, 19_11_54.png" alt="App in Entwicklung">
+      <div class="app-overlay">
+        <h2>NextRound</h2>
+        <p>Faire Runden</p>
+      </div>
+    </div>
+
+    <div class="app-card" onclick="openModal('PerfektMix', 'Immer Perfekte Mischen.', 'Apps/PerfektMix/Logo-PerfektMix.png', 'Apps/PerfektMix/PerfektMix.html', '', 'Apps/PerfektMix/PerfektMix.apk')">
+      <img src="Apps/PerfektMix/Logo-PerfektMix.png" alt="Geplante App">
+      <div class="app-overlay">
+        <h2>PerfektMix</h2>
+        <p>Immer Perfekte Mischen</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="appModal">
+    <div class="modal-content">
+      <img id="modalImage" src="" alt="">
+      <h2 id="modalTitle"></h2>
+      <p id="modalDesc"></p>
+      <div class="download-buttons">
+        <a id="webLink" class="btn" href="#" target="_blank">🌐 Web-App</a>
+        <a id="iosLink" class="btn" href="#" download>⬇ iOS</a>
+        <a id="androidLink" class="btn" href="#" download>⬇ Android</a>
+      </div>
+      <div class="close" onclick="closeModal()">✖ Schließen</div>
+    </div>
+  </div>
+
+  <script>
+    function openModal(title, desc, img, webUrl, iosUrl, androidUrl) {
+      document.getElementById("modalTitle").innerText = title;
+      document.getElementById("modalDesc").innerText = desc;
+      document.getElementById("modalImage").src = img;
+      
+      const webLink = document.getElementById("webLink");
+      const iosLink = document.getElementById("iosLink");
+      const androidLink = document.getElementById("androidLink");
+      
+      // Web-App Link
+      if (webUrl && webUrl !== '#') {
+        webLink.href = webUrl;
+        webLink.style.display = 'inline-block';
+      } else {
+        webLink.style.display = 'none';
+      }
+      
+      // iOS Download
+      if (iosUrl && iosUrl !== '') {
+        iosLink.href = iosUrl;
+        iosLink.style.display = 'inline-block';
+      } else {
+        iosLink.style.display = 'none';
+      }
+      
+      // Android Download
+      if (androidUrl && androidUrl !== '') {
+        androidLink.href = androidUrl;
+        androidLink.style.display = 'inline-block';
+      } else {
+        androidLink.style.display = 'none';
+      }
+      
+      document.getElementById("appModal").classList.add("open");
+    }
+
+    function closeModal() {
+      document.getElementById("appModal").classList.remove("open");
+    }
+    
+    const menuBtn = document.querySelector(".menu-toggle");
+    const sideMenu = document.getElementById("sideMenu");
+
+    menuBtn.addEventListener("click", () => {
+      sideMenu.classList.toggle("open");
+    });
+
+    // Menü schließt sich, wenn Maus den Bereich verlässt
+    sideMenu.addEventListener("mouseleave", () => {
+      sideMenu.classList.remove("open");
+    });
+    // Typewriter Animation
+    const texts = [
+      "📱 Meine Apps",
+      "🚀 Mobile Development", 
+      "💻 Cross Platform",
+      "🎯 Native Apps",
+      "⚡ Progressive Web Apps"
+    ];
+
+    let textIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    const typewriterElement = document.getElementById("typewriter-title");
+
+    function typeWriter() {
+      const currentText = texts[textIndex];
+      
+      if (isDeleting) {
+        typewriterElement.innerHTML = `<span class="typewriter-text">${currentText.substring(0, charIndex - 1)}</span>`;
+        charIndex--;
+        
+        if (charIndex === 0) {
+          isDeleting = false;
+          textIndex = (textIndex + 1) % texts.length;
+        }
+      } else {
+        typewriterElement.innerHTML = `<span class="typewriter-text">${currentText.substring(0, charIndex + 1)}</span>`;
+        charIndex++;
+        
+        if (charIndex === currentText.length) {
+          setTimeout(() => {
+            isDeleting = true;
+          }, 2000); // Pause bevor gelöscht wird
+        }
+      }
+      
+      setTimeout(typeWriter, isDeleting ? 100 : 150);
+    }
+
+    // Animation starten
+    typeWriter();
+  </script>
+
+</body>
+</html>
